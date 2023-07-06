@@ -38,4 +38,4 @@ Player 1 (red) plays first, followed by Player 2 (yellow). To drop a piece click
 
 - **ptext.py**
   <br>
-  This is a module from [pygame text](https://github.com/cosmologicon/pygame-text) that I use in the `main.py`
+  This is a module from [pygame text](https://github.com/cosmologicon/pygame-text) that I use in `main.py`
