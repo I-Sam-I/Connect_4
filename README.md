@@ -26,3 +26,5 @@ You can change these values, however, there are limitations:
 Player 1 (red) plays first, followed by Player 2 (yellow). To drop a piece click on a column thats valid to play in. Once any player gets a 4 (or the value you selected) in a row, the game is over and that player wins. To play again, restart the process.
 
 #### Files and Folders
+- **graphics/**
+  
