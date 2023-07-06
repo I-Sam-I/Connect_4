@@ -29,4 +29,15 @@ Player 1 (red) plays first, followed by Player 2 (yellow). To drop a piece click
 - **versions/**
   <br>
   This folder stores all my previous versions. `version_1` and `version_2` are command line based and use [tabulate](https://pypi.org/project/tabulate/). `pygame_v1`, `pygame_v2`, and `pygame_v3` use [pygame](https://www.pygame.org/), [sys](https://docs.python.org/3/library/sys.html), [numpy](https://numpy.org/), [pygame gui](https://github.com/MyreMylar/pygame_gui), and [ptext](https://github.com/cosmologicon/pygame-text).
-- **
+
+- **main.exe**
+  <br>
+  This file is the executable file of the game, you may download it and play it. Its code is in `main.py`
+
+- **main.py**
+  <br>
+  All the code for the game is here.
+
+- **ptext.py**
+  <br>
+  This is a module from [pygame text](https://github.com/cosmologicon/pygame-text) that I use in the `main.py`
