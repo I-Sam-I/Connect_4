@@ -21,7 +21,7 @@ You can change these values, however, there are limitations:
 - The max number of columns depends on the width of your screen.
 - The max number of pieces in a row to win cannot be greater than the number of rows or columns.
 
-Player 1 (red) plays first, followed by Player 2 (yellow). To drop a piece click on a column thats valid to play in. Once any player gets a 4 (or the value you selected) in a row, the game is over and that player wins. To play again, restart the process.
+Player 1 (red) plays first, followed by Player 2 (yellow). To drop a piece click on a column that is valid to play in. Once a player gets a 4 (or the value you selected) in a row, the game is over and that player wins. To play again, restart the process.
 
 #### Files and Folders
 - **versions/**
