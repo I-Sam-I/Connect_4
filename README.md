@@ -26,5 +26,5 @@ You can change these values, however, there are limitations:
 Player 1 (red) plays first, followed by Player 2 (yellow). To drop a piece click on a column thats valid to play in. Once any player gets a 4 (or the value you selected) in a row, the game is over and that player wins. To play again, restart the process.
 
 #### Files and Folders
-- **graphics/**
-  
+- **versions/**
+  This folder contains all my previous versions, `version_1` and `version_2` are command line based, `pygame_v1`, `pygame_v2`, and `pygame_v3` use [pygame](https://www.pygame.org/)
