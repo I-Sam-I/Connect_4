@@ -202,7 +202,7 @@ def get_input():
         "title_text": 'Connect 4 Customization',
         "instructions_text": 'Default Values Are Already Selected',
         "row_text": 'Number of Rows:',
-        "column_text": 'Number of Column:',
+        "column_text": 'Number of Columns:',
         "win_count_text": 'Number of Pieces in a Row to Win:'
     }
 
