@@ -10,7 +10,7 @@ The rules of this game is the same as the rules of the official Connect 4. Howev
 
 #### How to Play
 To play, download `main.exe`, and run it. When you run it, it displays a "Connect 4 Customization" menu. Note that the default values are already selected.
-<br><br>
+<br>
 Default Values
 - Number of Rows: 6
 - Number of Columns: 7
