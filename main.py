@@ -277,7 +277,7 @@ def get_input():
                     win_count_dropdown.kill()
                     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
                         options_list = [str(i) for i in range(1, max(int(row_dropdown.selected_option), int(column_dropdown.selected_option)) + 1)],
-                        starting_option = str(WIN_COUNT),
+                        starting_option = str(WIN_COUNT) if WIN_COUNT <= int(row_dropdown.selected_option) or WIN_COUNT <= int(column_dropdown.selected_option) else str(max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))),
                         manager = MANAGER,
                         relative_rect = pg.Rect(dropdown_x + (SQUARE_SIZE * 1.4), dropdown_y + SQUARE_SIZE * 2, dropdown_width, dropdown_height),
                         object_id = "#win_count_dropdown"
