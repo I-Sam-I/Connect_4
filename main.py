@@ -232,9 +232,9 @@ def get_input():
         relative_rect = pg.Rect(dropdown_x + 20, dropdown_y + SQUARE_SIZE, dropdown_width, dropdown_height),
         object_id=  "#column_dropdown"
     )
-
+    max_win = max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
-        options_list = [str(i) for i in range(1, max(int(row_dropdown.selected_option), int(column_dropdown.selected_option)) + 1)],
+        options_list = [str(i) for i in range(1, max_win + 1)],
         starting_option = str(WIN_COUNT),
         manager = MANAGER,
         relative_rect = pg.Rect(dropdown_x + (SQUARE_SIZE * 1.4), dropdown_y + SQUARE_SIZE * 2, dropdown_width, dropdown_height),
@@ -275,9 +275,10 @@ def get_input():
                 
                 if event_id in ["#row_dropdown", "#column_dropdown"]:
                     win_count_dropdown.kill()
+                    max_win = max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
                     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
-                        options_list = [str(i) for i in range(1, max(int(row_dropdown.selected_option), int(column_dropdown.selected_option)) + 1)],
-                        starting_option = str(WIN_COUNT) if WIN_COUNT <= int(row_dropdown.selected_option) or WIN_COUNT <= int(column_dropdown.selected_option) else str(max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))),
+                        options_list = [str(i) for i in range(1, max_win + 1)],
+                        starting_option = str(WIN_COUNT) if WIN_COUNT <= int(row_dropdown.selected_option) or WIN_COUNT <= int(column_dropdown.selected_option) else str(max_win),
                         manager = MANAGER,
                         relative_rect = pg.Rect(dropdown_x + (SQUARE_SIZE * 1.4), dropdown_y + SQUARE_SIZE * 2, dropdown_width, dropdown_height),
                         object_id = "#win_count_dropdown"
