@@ -2,7 +2,8 @@
 #### Video Demo: <https://youtu.be/oqO9bwvrjpA>
 
 #### Description:
-
+GitHub Repo: <https://github.com/I-Sam-I/Connect_4/tree/main>
+<br><br>
 This project is for [CS50x](https://cs50.harvard.edu/x/2023/)'s Final Project.
 
 #### Connect 4 Rules
