@@ -31,11 +31,23 @@ After clicking on `PLAY`, Player 1 (red) plays first, followed by Player 2 (yell
 
   - `version_1`
     <br>
-    The first version of my Connect 4 game is a command line-based game, meaning it is text-based in the Terminal. This version is not
-    customizable. It uses the `tabulate` function from the `tabulate` module to display the board. The player types a letter from A-G,
-    representing the columns, to drop a piece. There are many bugs with this code. For instance, the `check_win()` function does not
-    declare a winner if a player drops a piece in the middle of a 4 in a row. The `check_win()` function is also bulky and inefficient.
+    The first version of my Connect 4 game is a command line-based game, meaning it is text-based in the Terminal. This version is not customizable. It uses the `tabulate` function from the `tabulate` module to display the board. The player types a letter from A-G, representing the columns, to drop a piece. There are many bugs with this code. For instance, the `check_win()` function does not declare a winner if a player drops a piece in the middle of a 4 in a row. The `check_win()` function is also bulky and inefficient.
+
+  - `version_2`
+    <br>
+    `version_2` is also command-line based and uses the `tabulate` function from `tabulate`. The `check_win()` function bug is resolved. However, the user can change the number of rows, columns, and pieces in a row required to win. There is no maximum number of rows, but the maximum number of columns is only 26 as the user has to use alphabets (A-Z) to drop a piece. The number of pieces in a row to win is always less than or equal to the rows or columns.
     
+  - `pygame_v1`
+    <br>
+    `pygame_v1` is the first version that uses `pygame` for an interactable board and `numpy` to initialize the board. The user cannot customize the game. If the players tie, then the game crashes. This version does not have a game loop, and the code is all over the place.
+
+  - `pygame_v2`
+    <br>
+    `pygame_v2` is the second version, where the user can customize the board. However, there were no restrictions on how big the board could be other than that it had to be a two-digit number. I accomplished this by using `pygame_gui`'s `TextEntryLine`. The code is neater and better designed and has a main game loop. Some bugs in the code include that the game is infinitely long if there is a tie and that when a player wins, the text is too big to fit the screen if the board is smaller than the default values.
+
+  - `pygame_v3`
+    <br>
+    `pygame_v3` is the third version. The user can still customize the board; however, there are restrictions now. The maximum number of rows and columns depends on the user's screen size. I used dropdowns TODO
 
 - **main.py**
   <br>
