@@ -47,11 +47,11 @@ After clicking on `PLAY`, Player 1 (red) plays first, followed by Player 2 (yell
 
   - `pygame_v3`
     <br>
-    `pygame_v3` is the third version. The user can still customize the board; however, there are restrictions now. The maximum number of rows and columns depends on the user's screen size. I used dropdowns TODO
+    `pygame_v3` is the third version. The user can still customize the board; however, there are restrictions now. The maximum number of rows and columns depends on the user's screen size. I used dropdowns to limit the user's input. I used `drawbox` and `draw` from `ptext` to display the winner correctly without overflowing. The rest is the same.
 
 - **main.py**
   <br>
-  All the code for the game is here.
+  `main.py` is the improved and cleaner version of `pygame_v3`.
 
 - **ptext.py**
   <br>
