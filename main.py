@@ -2,13 +2,13 @@ import pygame as pg
 import pygame_gui as pg_gui
 from ptext import drawbox, draw
 from sys import exit
-from numpy import zeros
+from numpy import zeros, ndarray
 
 pg.init()
 
 
 def main():
-    global BOARD, ROWS, COLUMNS, WIN_COUNT, WIDTH, HEIGHT, SCREEN, SQUARE_SIZE, RADIUS, CLOCK, MANAGER, FPS, TOTAL_MOVES
+    global BOARD, ROWS, COLUMNS, WIN_COUNT, WIDTH, HEIGHT, SCREEN, SQUARE_SIZE, RADIUS, CLOCK, MANAGER, FPS
 
     FPS = 60
         
@@ -34,7 +34,7 @@ def main():
     # Board
     values = get_input()
     ROWS, COLUMNS, WIN_COUNT = values["rows"], values["columns"], values["win_count"]
-    BOARD = zeros((ROWS, COLUMNS))
+    BOARD = zeros((ROWS, COLUMNS), dtype=int)
 
 
     # SCREEN
@@ -88,14 +88,14 @@ def main():
                     exit()
 
             # Winner
-            display_winner(player, move)
+            display_winner(player, TOTAL_MOVES, move)
 
 
         pg.display.flip()
         CLOCK.tick(FPS)
 
 
-def check_win(player):
+def check_win(player: int) -> bool:
 
     # Temp variables
     highlight_width = 13
@@ -106,7 +106,8 @@ def check_win(player):
     for i in range(COLUMNS):
         for j in range(ROWS - limit):
 
-            count = sum([1 for k in range(WIN_COUNT) if BOARD[j + k][i] == player])
+            count: int = [BOARD[j + k][i] for k in range(WIN_COUNT)].count(player)
+
 
             # If win, highlight it
             if count == WIN_COUNT:
@@ -118,7 +119,7 @@ def check_win(player):
     for i in range(ROWS):
         for j in range(COLUMNS - limit):
             
-            count = sum([1 for k in range(WIN_COUNT) if BOARD[i][j + k] == player])
+            count: int = [BOARD[i][j + k] for k in range(WIN_COUNT)].count(player)
 
             # If win, highlight it
             if count == WIN_COUNT:
@@ -130,7 +131,7 @@ def check_win(player):
     for i in range(limit, ROWS):
         for j in range(COLUMNS - limit):
             
-            count = sum([1 for k in range(WIN_COUNT) if BOARD[i - k][j + k] == player])
+            count: int = [BOARD[i - k][j + k] for k in range(WIN_COUNT)].count(player)
 
             # If win, highlight it
             if count == WIN_COUNT:
@@ -142,7 +143,7 @@ def check_win(player):
     for i in range(limit, ROWS):
         for j in range(limit, COLUMNS):
             
-            count = sum([1 for k in range(WIN_COUNT) if BOARD[i - k][j - k] == player])
+            count: int = [BOARD[i - k][j - k] for k in range(WIN_COUNT)].count(player)
 
             # If win, highlight it
             if count == WIN_COUNT:
@@ -152,13 +153,14 @@ def check_win(player):
 
     return flag
 
-def display_winner(player, move):
-    
+
+def display_winner(player: int, total_moves: int, move: int) -> None:
+
     # Clear Top Row
     pg.draw.rect(SCREEN, "black", (0, 0, WIDTH, SQUARE_SIZE))
 
     # Check for Tie
-    if move >= TOTAL_MOVES:
+    if move >= total_moves:
         text = "TIE!!!"
         font_color = "white"
 
@@ -175,27 +177,25 @@ def display_winner(player, move):
         align = "center"
     )
 
-def draw_board():
+
+def draw_board() -> None:
     for r in range(ROWS):
         for c in range(COLUMNS):
 
             # Draw Square
-            pg.draw.rect(SCREEN, "blue", (c * SQUARE_SIZE, r * SQUARE_SIZE + SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+            pg.draw.rect(SCREEN, "blue", (c * SQUARE_SIZE, SQUARE_SIZE * (r + 1), SQUARE_SIZE, SQUARE_SIZE))
 
             # Draw Circle Based on Player
-            if BOARD[r][c] == 1:
-                pg.draw.circle(SCREEN, "red",
-                (c * SQUARE_SIZE + SQUARE_SIZE / 2, r * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE / 2), RADIUS)
+            match BOARD[r][c]:
+                case 1: circle_color: str = "red"
+                case 2: circle_color: str = "yellow"
+                case 0: circle_color: str = "black"
             
-            elif BOARD[r][c] == 2:
-                pg.draw.circle(SCREEN, "yellow",
-                (c * SQUARE_SIZE + SQUARE_SIZE / 2, r * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE / 2), RADIUS)
+            pg.draw.circle(SCREEN, circle_color, (SQUARE_SIZE * (c + .5), SQUARE_SIZE * (r + 1.5)), RADIUS)
+                
 
-            else:
-                pg.draw.circle(SCREEN, "black",
-                (c * SQUARE_SIZE + SQUARE_SIZE / 2, r * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE / 2), RADIUS)
 
-def get_input():
+def get_input() -> dict:
 
     # Texts on the Customization
     texts = {
@@ -207,9 +207,9 @@ def get_input():
     }
 
     # Max Size of BOARD
-    max_window_size = max(pg.display.get_desktop_sizes())
-    max_rows = max_window_size[1] // SQUARE_SIZE
-    max_columns = max_window_size[0] // SQUARE_SIZE
+    max_width, max_height = max(pg.display.get_desktop_sizes())
+    max_rows = max_height // SQUARE_SIZE
+    max_columns = max_width // SQUARE_SIZE
     
     # Dropdown variables
     dropdown_x = WIDTH // 2 + SQUARE_SIZE
@@ -218,7 +218,8 @@ def get_input():
 
     # Dropdowns
     row_dropdown = pg_gui.elements.UIDropDownMenu (
-        options_list = [str(i) for i in range(1, max_rows)],
+        # options_list = [str(i) for i in range(1, max_rows)],
+        options_list = list(map(str, range(1, max_rows))),
         starting_option = str(ROWS),
         manager = MANAGER,
         relative_rect = pg.Rect(dropdown_x, dropdown_y, dropdown_width, dropdown_height),
@@ -226,7 +227,8 @@ def get_input():
     )
 
     column_dropdown = pg_gui.elements.UIDropDownMenu (
-        options_list = [str(i) for i in range(1, max_columns + 1)],
+        # options_list = [str(i) for i in range(1, max_columns + 1)],
+        options_list = list(map(str, range(1, max_columns + 1))),
         starting_option = str(COLUMNS),
         manager = MANAGER,
         relative_rect = pg.Rect(dropdown_x + 20, dropdown_y + SQUARE_SIZE, dropdown_width, dropdown_height),
@@ -234,7 +236,8 @@ def get_input():
     )
     max_win = max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
-        options_list = [str(i) for i in range(1, max_win + 1)],
+        # options_list = [str(i) for i in range(1, max_win + 1)],
+        options_list = list(map(str, range(1, max_win + 1))),
         starting_option = str(WIN_COUNT),
         manager = MANAGER,
         relative_rect = pg.Rect(dropdown_x + (SQUARE_SIZE * 1.4), dropdown_y + SQUARE_SIZE * 2, dropdown_width, dropdown_height),
@@ -277,7 +280,8 @@ def get_input():
                     win_count_dropdown.kill()
                     max_win = max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
                     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
-                        options_list = [str(i) for i in range(1, max_win + 1)],
+                        # options_list = [str(i) for i in range(1, max_win + 1)],
+                        options_list = list(map(str, range(1, max_win + 1))),
                         starting_option = str(WIN_COUNT) if WIN_COUNT <= int(row_dropdown.selected_option) or WIN_COUNT <= int(column_dropdown.selected_option) else str(max_win),
                         manager = MANAGER,
                         relative_rect = pg.Rect(dropdown_x + (SQUARE_SIZE * 1.4), dropdown_y + SQUARE_SIZE * 2, dropdown_width, dropdown_height),
@@ -346,21 +350,23 @@ def get_input():
         pg.display.flip()
         CLOCK.tick(FPS)
 
-def piece_animation(player):
+
+def piece_animation(player: int) -> None:
 
     # Get Current Mouse Position
-    posx = pg.mouse.get_pos()[0]
+    posx: float = pg.mouse.get_pos()[0]
 
     # Clear Top Row
     pg.draw.rect(SCREEN, "black", (0, 0, WIDTH, SQUARE_SIZE))
     
     # Player Color
-    color = "red" if player == 1 else "yellow"
+    color: str = "red" if player == 1 else "yellow"
 
     # Draw Piece
     pg.draw.circle(SCREEN, color, (posx, SQUARE_SIZE / 2), RADIUS)
 
-def player_move(player, column):
+
+def player_move(player: int, column: int) -> None:
     # Check each row in column
     for i in range(ROWS - 1):
 
