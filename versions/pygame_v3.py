@@ -23,7 +23,7 @@ def main():
 
     SCREEN = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption('Connect 4')
-    pg.display.set_icon(pg.image.load('graphics/CS50_cat.png').convert_alpha())
+    #pg.display.set_icon(pg.image.load('graphics/CS50_cat.png').convert_alpha())
 
     # Clock
     CLOCK = pg.time.Clock()
