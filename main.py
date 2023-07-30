@@ -4,6 +4,7 @@ from ptext import drawbox, draw
 from sys import exit
 from numpy import zeros, ndarray
 
+
 pg.init()
 
 
@@ -193,7 +194,6 @@ def draw_board() -> None:
             
             pg.draw.circle(SCREEN, circle_color, (SQUARE_SIZE * (c + .5), SQUARE_SIZE * (r + 1.5)), RADIUS)
                 
-
 
 def get_input() -> dict:
 
