@@ -3,6 +3,7 @@ import pygame_gui as pg_gui
 from ptext import drawbox, draw
 from sys import exit
 from numpy import zeros, ndarray
+from random import choice
 
 
 pg.init()
@@ -10,8 +11,6 @@ pg.init()
 
 def main():
     global BOARD, ROWS, COLUMNS, WIN_COUNT, WIDTH, HEIGHT, SCREEN, SQUARE_SIZE, RADIUS, CLOCK, MANAGER, FPS
-
-    FPS = 60
         
     # Global Constants
     ROWS, COLUMNS = 6, 7
@@ -19,25 +18,21 @@ def main():
     SQUARE_SIZE = 100
     RADIUS = SQUARE_SIZE / 2 - 5
 
-    # SCREEN
+    # SCREEN Dimensions
     WIDTH = SQUARE_SIZE * COLUMNS
     HEIGHT = SQUARE_SIZE * (ROWS + 1)
 
-    SCREEN = pg.display.set_mode((WIDTH, HEIGHT))
-    pg.display.set_caption('Connect 4')
-
     # Clock
     CLOCK = pg.time.Clock()
+    FPS = 60
 
-    # Manager for pugame gui
+    # Manager for pygame gui
     MANAGER = pg_gui.UIManager((WIDTH, HEIGHT))
 
     # Board
-    values = get_input()
-    ROWS, COLUMNS, WIN_COUNT = values["rows"], values["columns"], values["win_count"]
+    ROWS, COLUMNS, WIN_COUNT = get_input()
     BOARD = zeros((ROWS, COLUMNS), dtype=int)
-
-
+    
     # SCREEN
     WIDTH = SQUARE_SIZE * COLUMNS
     HEIGHT = SQUARE_SIZE * (ROWS + 1)
@@ -65,19 +60,23 @@ def main():
                     pg.quit()
                     exit()
 
-                # Player move
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    column = event.pos[0] // 100
+                if player == 2: player_move(BOARD, player, best_move(player)); move += 1
+                else:
                     
-                    if BOARD[0][column] == 0:
-                        player_move(player, column)
+                    # Player move
+                    if event.type == pg.MOUSEBUTTONDOWN:
+                        column = event.pos[0] // 100
+                        
+                        if BOARD[0][column] == 0:
+                            player_move(BOARD, player, column)
+                        
                         move += 1
                     
-                    draw_board()
+                draw_board()
                     
-                    if check_win(player): game_over = True
+                if check_win(player): game_over = True
 
-                piece_animation(player)
+            piece_animation(player)
 
         # End Screen
         else:
@@ -95,6 +94,88 @@ def main():
         pg.display.flip()
         CLOCK.tick(FPS)
 
+
+def analyze_board(board: ndarray, player: int) -> int:
+    limit: int = WIN_COUNT - 1
+    score: int = 0
+    
+    # Analyze Center
+    center_count = list(board[:, COLUMNS // 2]).count(player)
+    score += 10 * center_count
+    
+        
+    # Analyze Horizontal -
+    for i in range(ROWS):
+        row: list = list(board[i,:])
+        for j in range(COLUMNS - limit):
+            window: list = row[j:j + WIN_COUNT]
+            score += analyze_window(window, player)
+    
+    # Analyze Vertical |
+    for i in range(COLUMNS):
+        col: list = list(board[:,i])
+        for j in range(ROWS - limit):
+            window: list = col[j:j + WIN_COUNT]
+            score += analyze_window(window, player)
+
+    # Analyze Diagonal /
+    for i in range(ROWS - limit):
+        for j in range(COLUMNS - limit):
+            window: list = [board[i+k][j+k] for k in range(WIN_COUNT)]
+            score += analyze_window(window, player)
+            
+    # Analyze Diagonal \
+    for i in range(ROWS):
+        for j in range(COLUMNS - limit):
+            window: list = [board[i-k][j+k] for k in range(WIN_COUNT)]
+            score += analyze_window(window, player)
+    
+    return score
+
+
+def analyze_window(window: list, player: int) -> int:      
+    score: int = 0
+    player_count: int = window.count(player)
+    opp_player: int = 2 if player == 1 else 1
+    opp_count: int = window.count(opp_player)
+    empty_count: int = window.count(0)
+    
+    for count in range(WIN_COUNT, 1, -1):
+        if player_count == count and empty_count == WIN_COUNT - count:
+            if count == WIN_COUNT: score += 10000
+            else: score += count * 25
+    
+    for count in range(WIN_COUNT - 1, 2, -1):
+        if opp_count == count and empty_count == WIN_COUNT - count:
+            if count == WIN_COUNT - 1: score -= 1000
+            else: score -= count * 22
+    
+    # if player_count == 4: score += 100
+    # elif player_count == 3 and empty_count == 1: score += 90
+    # elif player_count == 2 and empty_count == 2: score += 50
+    
+    # if opp_count == 3 and empty_count == 1: score -= 80
+    # elif opp_count == 2 and empty_count == 2: score -= 25
+    
+    return score
+
+
+def best_move(player: int) -> int:
+    valid_columns = [c for c in range(COLUMNS) if BOARD[0][c] == 0]
+    best_score = -10000
+    # best_column = COLUMNS // 2
+    best_column: int = choice(valid_columns)
+    
+    for col in valid_columns:
+        temp_board = BOARD.copy()
+        player_move(temp_board, player, col)
+        score = analyze_board(temp_board, player)
+        
+        if score > best_score: best_score, best_column = score, col
+        
+    
+    return best_column
+        
 
 def check_win(player: int) -> bool:
 
@@ -195,7 +276,11 @@ def draw_board() -> None:
             pg.draw.circle(SCREEN, circle_color, (SQUARE_SIZE * (c + .5), SQUARE_SIZE * (r + 1.5)), RADIUS)
                 
 
-def get_input() -> dict:
+def get_input() -> tuple:
+    
+    # SCREEN
+    SCREEN = pg.display.set_mode((WIDTH, HEIGHT))
+    pg.display.set_caption('Connect 4')
 
     # Texts on the Customization
     texts = {
@@ -218,8 +303,7 @@ def get_input() -> dict:
 
     # Dropdowns
     row_dropdown = pg_gui.elements.UIDropDownMenu (
-        # options_list = [str(i) for i in range(1, max_rows)],
-        options_list = list(map(str, range(1, max_rows))),
+        options_list = [str(i) for i in range(1, max_rows)],
         starting_option = str(ROWS),
         manager = MANAGER,
         relative_rect = pg.Rect(dropdown_x, dropdown_y, dropdown_width, dropdown_height),
@@ -227,8 +311,7 @@ def get_input() -> dict:
     )
 
     column_dropdown = pg_gui.elements.UIDropDownMenu (
-        # options_list = [str(i) for i in range(1, max_columns + 1)],
-        options_list = list(map(str, range(1, max_columns + 1))),
+        options_list = [str(i) for i in range(1, max_columns + 1)],
         starting_option = str(COLUMNS),
         manager = MANAGER,
         relative_rect = pg.Rect(dropdown_x + 20, dropdown_y + SQUARE_SIZE, dropdown_width, dropdown_height),
@@ -236,8 +319,7 @@ def get_input() -> dict:
     )
     max_win = max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
-        # options_list = [str(i) for i in range(1, max_win + 1)],
-        options_list = list(map(str, range(1, max_win + 1))),
+        options_list = [str(i) for i in range(1, max_win + 1)],
         starting_option = str(WIN_COUNT),
         manager = MANAGER,
         relative_rect = pg.Rect(dropdown_x + (SQUARE_SIZE * 1.4), dropdown_y + SQUARE_SIZE * 2, dropdown_width, dropdown_height),
@@ -254,14 +336,6 @@ def get_input() -> dict:
 
     # Game Loop
     while True:
-
-        # Defualt Values
-        return_values = {
-            "rows": ROWS,
-            "columns": COLUMNS,
-            "win_count": WIN_COUNT
-            }
-
         # Refresh Rate 
         UI_REFRESH_RATE = CLOCK.tick(FPS) / 1000
 
@@ -280,8 +354,7 @@ def get_input() -> dict:
                     win_count_dropdown.kill()
                     max_win = max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
                     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
-                        # options_list = [str(i) for i in range(1, max_win + 1)],
-                        options_list = list(map(str, range(1, max_win + 1))),
+                        options_list = [str(i) for i in range(1, max_win + 1)],
                         starting_option = str(WIN_COUNT) if WIN_COUNT <= int(row_dropdown.selected_option) or WIN_COUNT <= int(column_dropdown.selected_option) else str(max_win),
                         manager = MANAGER,
                         relative_rect = pg.Rect(dropdown_x + (SQUARE_SIZE * 1.4), dropdown_y + SQUARE_SIZE * 2, dropdown_width, dropdown_height),
@@ -290,11 +363,7 @@ def get_input() -> dict:
 
             # If Submitted
             if submit_button.check_pressed():
-                return_values["rows"] = int(row_dropdown.selected_option)
-                return_values["columns"] = int(column_dropdown.selected_option)
-                return_values["win_count"] = int(win_count_dropdown.selected_option)
-
-                return return_values
+                return int(row_dropdown.selected_option), int(column_dropdown.selected_option), int(win_count_dropdown.selected_option)
 
             MANAGER.process_events(event)
         
@@ -366,17 +435,17 @@ def piece_animation(player: int) -> None:
     pg.draw.circle(SCREEN, color, (posx, SQUARE_SIZE / 2), RADIUS)
 
 
-def player_move(player: int, column: int) -> None:
+def player_move(board: ndarray, player: int, column: int) -> None:
     # Check each row in column
     for i in range(ROWS - 1):
 
         # Next row is not empty, then place move here
-        if BOARD[i + 1][column] != 0:
-            BOARD[i][column] = player
+        if board[i + 1][column] != 0:
+            board[i][column] = player
             return
 
     # Last row
-    BOARD[ROWS - 1][column] = player
+    board[ROWS - 1][column] = player
     return
 
 
