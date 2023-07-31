@@ -39,6 +39,11 @@ After clicking on `PLAY`, Player 1 (red) plays first, followed by Player 2 (yell
 - **ptext.py**
   <br>
   This is a module from [pygame text](https://github.com/cosmologicon/pygame-text) that I use in `main.py`
+
+- **requirements.txt**
+  <br>
+  List of the modules used in `project.py`
+  
 - **versions/**
   <br>
   This folder stores all my previous versions. `version_1` and `version_2` are command line based and use [tabulate](https://pypi.org/project/tabulate/). `pygame_v1`, `pygame_v2`, and `pygame_v3` use [pygame](https://www.pygame.org/), [sys](https://docs.python.org/3/library/sys.html), [numpy](https://numpy.org/), [pygame gui](https://github.com/MyreMylar/pygame_gui), and [ptext](https://github.com/cosmologicon/pygame-text).
