@@ -59,9 +59,8 @@ def main():
                 if event.type == pg.QUIT:
                     pg.quit()
                     exit()
-
-                if player == 2: player_move(BOARD, player, best_move(player)); move += 1
-                else:
+                    
+                if player == 1:
                     
                     # Player move
                     if event.type == pg.MOUSEBUTTONDOWN:
@@ -69,13 +68,17 @@ def main():
                         
                         if BOARD[0][column] == 0:
                             player_move(BOARD, player, column)
-                        
-                        move += 1
-                    
-                draw_board()
-                    
+                            move += 1
+                
+                # AI move
+                elif player == 2:
+                    player_move(BOARD, player, best_move(player))
+                
+                    move += 1
+                
+                draw_board()  
                 if check_win(player): game_over = True
-
+            
             piece_animation(player)
 
         # End Screen
@@ -148,22 +151,14 @@ def analyze_window(window: list, player: int) -> int:
     for count in range(WIN_COUNT - 1, 2, -1):
         if opp_count == count and empty_count == WIN_COUNT - count:
             if count == WIN_COUNT - 1: score -= 1000
-            else: score -= count * 22
-    
-    # if player_count == 4: score += 100
-    # elif player_count == 3 and empty_count == 1: score += 90
-    # elif player_count == 2 and empty_count == 2: score += 50
-    
-    # if opp_count == 3 and empty_count == 1: score -= 80
-    # elif opp_count == 2 and empty_count == 2: score -= 25
+            else: score -= count * 20
     
     return score
 
 
 def best_move(player: int) -> int:
     valid_columns = [c for c in range(COLUMNS) if BOARD[0][c] == 0]
-    best_score = -10000
-    # best_column = COLUMNS // 2
+    best_score = -10000000
     best_column: int = choice(valid_columns)
     
     for col in valid_columns:
@@ -317,7 +312,7 @@ def get_input() -> tuple:
         relative_rect = pg.Rect(dropdown_x + 20, dropdown_y + SQUARE_SIZE, dropdown_width, dropdown_height),
         object_id=  "#column_dropdown"
     )
-    max_win = max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
+    max_win = min(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
         options_list = [str(i) for i in range(1, max_win + 1)],
         starting_option = str(WIN_COUNT),
@@ -352,10 +347,10 @@ def get_input() -> tuple:
                 
                 if event_id in ["#row_dropdown", "#column_dropdown"]:
                     win_count_dropdown.kill()
-                    max_win = max(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
+                    max_win = min(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
                     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
                         options_list = [str(i) for i in range(1, max_win + 1)],
-                        starting_option = str(WIN_COUNT) if WIN_COUNT <= int(row_dropdown.selected_option) or WIN_COUNT <= int(column_dropdown.selected_option) else str(max_win),
+                        starting_option = str(WIN_COUNT) if WIN_COUNT <= int(row_dropdown.selected_option) and WIN_COUNT <= int(column_dropdown.selected_option) else str(max_win),
                         manager = MANAGER,
                         relative_rect = pg.Rect(dropdown_x + (SQUARE_SIZE * 1.4), dropdown_y + SQUARE_SIZE * 2, dropdown_width, dropdown_height),
                         object_id = "#win_count_dropdown"
