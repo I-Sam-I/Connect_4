@@ -1,6 +1,6 @@
 import pygame as pg
 import pygame_gui as pg_gui
-from test.ptext import drawbox, draw
+from ptext import drawbox, draw
 from sys import exit
 from numpy import zeros
 
