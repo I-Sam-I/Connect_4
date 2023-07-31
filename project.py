@@ -9,25 +9,28 @@ from random import choice
 pg.init()
 
 
+# Global Constants
+ROWS, COLUMNS = 6, 7
+WIN_COUNT = 4
+SQUARE_SIZE = 100
+RADIUS = SQUARE_SIZE / 2 - 5
+
+BOARD = zeros((ROWS, COLUMNS), dtype=int)
+
+# SCREEN Dimensions
+WIDTH = SQUARE_SIZE * COLUMNS
+HEIGHT = SQUARE_SIZE * (ROWS + 1)
+SCREEN = pg.display.set_mode((WIDTH, HEIGHT))
+
+# Clock
+CLOCK = pg.time.Clock()
+FPS = 60
+
+# Manager for pygame gui
+MANAGER = pg_gui.UIManager((WIDTH, HEIGHT))
+
 def main():
-    global BOARD, ROWS, COLUMNS, WIN_COUNT, WIDTH, HEIGHT, SCREEN, SQUARE_SIZE, RADIUS, CLOCK, MANAGER, FPS
-        
-    # Global Constants
-    ROWS, COLUMNS = 6, 7
-    WIN_COUNT = 4
-    SQUARE_SIZE = 100
-    RADIUS = SQUARE_SIZE / 2 - 5
-
-    # SCREEN Dimensions
-    WIDTH = SQUARE_SIZE * COLUMNS
-    HEIGHT = SQUARE_SIZE * (ROWS + 1)
-
-    # Clock
-    CLOCK = pg.time.Clock()
-    FPS = 60
-
-    # Manager for pygame gui
-    MANAGER = pg_gui.UIManager((WIDTH, HEIGHT))
+    global BOARD, ROWS, COLUMNS, WIN_COUNT, WIDTH, HEIGHT
 
     # Board
     ROWS, COLUMNS, WIN_COUNT, MODE = get_input()
@@ -80,12 +83,12 @@ def main():
                     
                     # AI move
                     elif player == 2:
-                        player_move(BOARD, player, best_move(player))
+                        player_move(BOARD, player, best_move(BOARD, player))
                     
                         move += 1
                 
                 draw_board()  
-                if check_win(player): game_over = True
+                if check_win(BOARD, player): game_over = True
             
             piece_animation(player)
 
@@ -129,13 +132,13 @@ def analyze_board(board: ndarray, player: int) -> int:
             window: list = col[j:j + WIN_COUNT]
             score += analyze_window(window, player)
 
-    # Analyze Diagonal /
+    # Analyze Diagonal-Right /
     for i in range(ROWS - limit):
         for j in range(COLUMNS - limit):
             window: list = [board[i+k][j+k] for k in range(WIN_COUNT)]
             score += analyze_window(window, player)
             
-    # Analyze Diagonal \
+    # Analyze Diagonal-Left \
     for i in range(ROWS):
         for j in range(COLUMNS - limit):
             window: list = [board[i-k][j+k] for k in range(WIN_COUNT)]
@@ -158,19 +161,19 @@ def analyze_window(window: list, player: int) -> int:
     
     for count in range(WIN_COUNT - 1, 1, -1):
         if opp_count == count and empty_count == WIN_COUNT - count:
-            if count == WIN_COUNT - 1: score -= 1000
+            if count == WIN_COUNT - 1: score -= 5000
             else: score -= count * 21
     
     return score
 
 
-def best_move(player: int) -> int:
-    valid_columns = [c for c in range(COLUMNS) if BOARD[0][c] == 0]
+def best_move(board: ndarray, player: int) -> int:
+    valid_columns = [c for c in range(COLUMNS) if board[0][c] == 0]
     best_score = -10000000
     best_column: int = choice(valid_columns)
     
     for col in valid_columns:
-        temp_board = BOARD.copy()
+        temp_board = board.copy()
         player_move(temp_board, player, col)
         score = analyze_board(temp_board, player)
         
@@ -180,7 +183,7 @@ def best_move(player: int) -> int:
     return best_column
         
 
-def check_win(player: int) -> bool:
+def check_win(board:ndarray, player: int) -> bool:
 
     # Temp variables
     highlight_width = 13
@@ -191,7 +194,7 @@ def check_win(player: int) -> bool:
     for i in range(COLUMNS):
         for j in range(ROWS - limit):
 
-            count: int = [BOARD[j + k][i] for k in range(WIN_COUNT)].count(player)
+            count: int = [board[j + k][i] for k in range(WIN_COUNT)].count(player)
 
 
             # If win, highlight it
@@ -204,7 +207,7 @@ def check_win(player: int) -> bool:
     for i in range(ROWS):
         for j in range(COLUMNS - limit):
             
-            count: int = [BOARD[i][j + k] for k in range(WIN_COUNT)].count(player)
+            count: int = [board[i][j + k] for k in range(WIN_COUNT)].count(player)
 
             # If win, highlight it
             if count == WIN_COUNT:
@@ -216,7 +219,7 @@ def check_win(player: int) -> bool:
     for i in range(limit, ROWS):
         for j in range(COLUMNS - limit):
             
-            count: int = [BOARD[i - k][j + k] for k in range(WIN_COUNT)].count(player)
+            count: int = [board[i - k][j + k] for k in range(WIN_COUNT)].count(player)
 
             # If win, highlight it
             if count == WIN_COUNT:
@@ -228,7 +231,7 @@ def check_win(player: int) -> bool:
     for i in range(limit, ROWS):
         for j in range(limit, COLUMNS):
             
-            count: int = [BOARD[i - k][j - k] for k in range(WIN_COUNT)].count(player)
+            count: int = [board[i - k][j - k] for k in range(WIN_COUNT)].count(player)
 
             # If win, highlight it
             if count == WIN_COUNT:
