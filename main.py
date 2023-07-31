@@ -112,7 +112,7 @@ def analyze_board(board: ndarray, player: int) -> int:
     
     # Analyze Center
     center_count = list(board[:, COLUMNS // 2]).count(player)
-    score += 10 * center_count
+    score += 15 * center_count
     
         
     # Analyze Horizontal -
@@ -159,7 +159,7 @@ def analyze_window(window: list, player: int) -> int:
     for count in range(WIN_COUNT - 1, 1, -1):
         if opp_count == count and empty_count == WIN_COUNT - count:
             if count == WIN_COUNT - 1: score -= 1000
-            else: score -= count * 23
+            else: score -= count * 21
     
     return score
 
