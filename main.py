@@ -30,7 +30,7 @@ def main():
     MANAGER = pg_gui.UIManager((WIDTH, HEIGHT))
 
     # Board
-    ROWS, COLUMNS, WIN_COUNT = get_input()
+    ROWS, COLUMNS, WIN_COUNT, MODE = get_input()
     BOARD = zeros((ROWS, COLUMNS), dtype=int)
     
     # SCREEN
@@ -60,21 +60,29 @@ def main():
                     pg.quit()
                     exit()
                     
-                if player == 1:
-                    
-                    # Player move
+                if MODE == "Player vs Player":
                     if event.type == pg.MOUSEBUTTONDOWN:
                         column = event.pos[0] // 100
                         
                         if BOARD[0][column] == 0:
                             player_move(BOARD, player, column)
                             move += 1
-                
-                # AI move
-                elif player == 2:
-                    player_move(BOARD, player, best_move(player))
-                
-                    move += 1
+                else:
+                    if player == 1:
+                        
+                        # Player move
+                        if event.type == pg.MOUSEBUTTONDOWN:
+                            column = event.pos[0] // 100
+                            
+                            if BOARD[0][column] == 0:
+                                player_move(BOARD, player, column)
+                                move += 1
+                    
+                    # AI move
+                    elif player == 2:
+                        player_move(BOARD, player, best_move(player))
+                    
+                        move += 1
                 
                 draw_board()  
                 if check_win(player): game_over = True
@@ -312,6 +320,7 @@ def get_input() -> tuple:
         relative_rect = pg.Rect(dropdown_x + 20, dropdown_y + SQUARE_SIZE, dropdown_width, dropdown_height),
         object_id=  "#column_dropdown"
     )
+    
     max_win = min(int(row_dropdown.selected_option), int(column_dropdown.selected_option))
     win_count_dropdown = pg_gui.elements.UIDropDownMenu (
         options_list = [str(i) for i in range(1, max_win + 1)],
@@ -321,13 +330,23 @@ def get_input() -> tuple:
         object_id = "#win_count_dropdown"
     )
 
+    # Mode
+    mode_list = pg_gui.elements.UISelectionList(
+        relative_rect = pg.Rect((WIDTH // 2 - 100, HEIGHT - SQUARE_SIZE * 2.5), (200, 50)),
+        item_list = ["Player vs Player", "Player vs Computer"],
+        manager = MANAGER,
+        object_id = "#mode"
+    )
+    
     # Play
     submit_button = pg_gui.elements.UIButton (
-        relative_rect = pg.Rect((WIDTH // 2 - 50, HEIGHT - SQUARE_SIZE * 2), (100, 50)),
+        relative_rect = pg.Rect((WIDTH // 2 - 50, HEIGHT - SQUARE_SIZE * 1.75), (100, 50)),
         manager = MANAGER,
         object_id = "#submit",
         text = "PLAY"
     )
+    
+
 
     # Game Loop
     while True:
@@ -358,7 +377,9 @@ def get_input() -> tuple:
 
             # If Submitted
             if submit_button.check_pressed():
-                return int(row_dropdown.selected_option), int(column_dropdown.selected_option), int(win_count_dropdown.selected_option)
+                mode = mode_list.get_single_selection()
+                if mode:
+                    return int(row_dropdown.selected_option), int(column_dropdown.selected_option), int(win_count_dropdown.selected_option), mode
 
             MANAGER.process_events(event)
         
