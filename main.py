@@ -154,12 +154,12 @@ def analyze_window(window: list, player: int) -> int:
     for count in range(WIN_COUNT, 1, -1):
         if player_count == count and empty_count == WIN_COUNT - count:
             if count == WIN_COUNT: score += 10000
-            else: score += count * 25
+            else: score += count * 20
     
-    for count in range(WIN_COUNT - 1, 2, -1):
+    for count in range(WIN_COUNT - 1, 1, -1):
         if opp_count == count and empty_count == WIN_COUNT - count:
             if count == WIN_COUNT - 1: score -= 1000
-            else: score -= count * 20
+            else: score -= count * 23
     
     return score
 
