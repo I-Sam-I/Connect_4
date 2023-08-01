@@ -1,5 +1,5 @@
 # Connect_4
-#### Video Demo: <https://youtu.be/oqO9bwvrjpA>
+#### Video Demo: <https://youtu.be/Nj9CavE2tx8>
 
 #### Description:
 GitHub Repo: <https://github.com/I-Sam-I/Connect_4/tree/main>
