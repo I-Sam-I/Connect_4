@@ -29,6 +29,7 @@ FPS = 60
 # Manager for pygame gui
 MANAGER = pg_gui.UIManager((WIDTH, HEIGHT))
 
+
 def main():
     global BOARD, ROWS, COLUMNS, WIN_COUNT, WIDTH, HEIGHT
 
