@@ -1,6 +1,3 @@
-# Text to Speech
-text-to-speech.py
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
